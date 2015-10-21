@@ -196,7 +196,7 @@ print str(numGamesRating(7.0)) + " games are rated " + str(7.0) + " or above out
 print "\n\n"
 print "average board game is best with: " + str(averageSuggestedPlayers()) + " players"
 print "\n\n"
-print "for board games that are rated 7.5 or above, average suggested players is: " + str(bestAverageSuggestedPlayers(7.5)) + " players"
+print "for board games that are rated 7.0 or above, average suggested players is: " + str(bestAverageSuggestedPlayers(7.0)) + " players"
 print "\n\n"
 numberGameMechanics(7.0)
 print "\n\n"
