@@ -63,35 +63,35 @@ class DmozSpider(scrapy.Spider):
     def statistics_parse_helper(self, response):
         #the table row that we are accessing is called self.child
         base_string = "table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(%d) > td:nth-child(2)" % self.child
-        print "child: " + str(self.child)
+        #print "child: " + str(self.child)
         #find out what section we are looking at (i.e. Num Ratings, Family Game Rank, Standard Dev, etc)
         category_name = extract_text(response, "table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(%d) > td:nth-child(1) > b" % self.child, False)
-	print "category_name: " + category_name
+	#print "category_name: " + category_name
 
         try:
             if (re.search(r'.*(Rank:)', category_name).group(1)):  #if we we on something that is a rank, we don't want it, recurse for the next one
                 self.child += 1
-                print "Rank caught, child: " + str(self.child) + extract_text(response,base_string,False)
+                #print "Rank caught, child: " + str(self.child) + extract_text(response,base_string,False)
                 return self.statistics_parse_helper(response)
         except:
             pass
         try:
             if (re.search(r'.*(Ratings:)', category_name).group(1)):    #if we caught Num Ratings, append hyperlink tag
                 self.child += 1
-                print "Num ratings caught, child: " + str(self.child) + extract_text(response,base_string + " > a",False)
+                #print "Num ratings caught, child: " + str(self.child) + extract_text(response,base_string + " > a",False)
                 return (base_string + " > a")
         except:
             pass
         try:
             if (re.search(r'.*(Views:)', category_name).group(1)):    #if we are on Num Views, reset child count (all we need)
                 self.child = 1
-                print "num views caught, child: " + str(self.child) + extract_text(response,base_string,False)
+                #print "num views caught, child: " + str(self.child) + extract_text(response,base_string,False)
                 return base_string
         except:
             pass
         try:  #if we are on any other statistic, prepare for the next one and return default string
             self.child += 1
-            print "none caught, child: " + str(self.child) + extract_text(response,base_string,False)
+            #print "none caught, child: " + str(self.child) + extract_text(response,base_string,False)
             return base_string
         except:
             print "catastrophic failure!!!"
@@ -143,20 +143,20 @@ class DmozSpider(scrapy.Spider):
         # ==========
         # Board Game Rank
         listing["rank"] = extract_text(response,"table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(1) > td:nth-child(2) > a",False)
-        print "rank: " + listing["rank"]
+        #print "rank: " + listing["rank"]
         self.child = 2
         # Num Ratings:
         listing["count_ratings"] = extract_text(response,self.statistics_parse_helper(response),False)
-        print "count_ratings: " + listing["count_ratings"]
+        #print "count_ratings: " + listing["count_ratings"]
         # Average Rating:
         listing["avg_ratings"] = extract_text(response,self.statistics_parse_helper(response),False)
-        print "avg: " + listing["avg_ratings"]
+        #print "avg: " + listing["avg_ratings"]
         # Standard Deviation:
         listing["std_deviation"] = extract_text(response,self.statistics_parse_helper(response),False)
-        print "std_deviation: " + listing["std_deviation"]
+        #print "std_deviation: " + listing["std_deviation"]
         # Num Views:
         listing["count_views"] = extract_text(response,self.statistics_parse_helper(response),False)
-        print "count_views: " + listing["count_views"]
+        #print "count_views: " + listing["count_views"]
         self.child = 2
 
         yield listing
