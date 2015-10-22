@@ -4,7 +4,7 @@ import re
 import operator
 import csv
 
-client = MongoClient('mongodb://127.0.0.1:3001')
+client = MongoClient('mongodb://127.0.0.1:3005')
 db = client['meteor']
 
 #via a simple regex:
@@ -13,14 +13,14 @@ def parseInt(sin):
   return int(m.groups()[-1]) if m and not callable(sin) else None
 
 def cleanRank():
-    for listing in db.listings.find():
+    for listing in db.updatedListings.find():
         if parseInt(listing[u'rank'])!=None:
             rank = int(listing[u'rank'])
             print listing[u'name']
             print listing[u'_id']
             print rank
 
-            result = db.listings.update_one({'_id': listing[u'_id']}, {'$set': {'rank': rank}})
+            result = db.updatedListings.update_one({'_id': listing[u'_id']}, {'$set': {'rank': rank}})
             print result.matched_count
             print result.modified_count
 
@@ -28,7 +28,7 @@ def cleanRank():
 def averageSuggestedPlayers():
     captureTotal = 0.0
     total = 0.0
-    for listing in db.listings.find():
+    for listing in db.updatedListings.find():
         tempString = listing[u'user_suggested_players']
         m = re.search(r'Best with (\d)\D*(\d)*', str(tempString))
         if m:
@@ -46,7 +46,7 @@ def averageSuggestedPlayers():
 def bestAverageSuggestedPlayers(minimumRating):
     captureTotal = 0
     total = 0
-    for listing in db.listings.find():
+    for listing in db.updatedListings.find():
         entry = listing[u'avg_ratings']
         try:
             if float(listing[u'avg_ratings']) >= minimumRating:
@@ -70,7 +70,7 @@ def bestAverageSuggestedPlayers(minimumRating):
     
 def numGamesRating(minimumRating):
     total = 0
-    for listing in db.listings.find():
+    for listing in db.updatedListings.find():
         entry = listing[u'avg_ratings']
         try:
             if float(listing[u'avg_ratings']) >= minimumRating:
@@ -85,7 +85,7 @@ def numberGameMechanics(minimumRating):
     newMechanicsDict = {}
     mechanicsDict = {}
     sortedMechanicList = []
-    for listing in db.listings.find():
+    for listing in db.updatedListings.find():
         entry = listing[u'mechanics']
         try:
             if float(listing[u'avg_ratings']) >= minimumRating:
@@ -113,7 +113,7 @@ def numberGameCategories(minimumRating):
     minimumGamesContain = 50
     categoriesDict = {}
     newCategoriesDict = {}
-    for listing in db.listings.find():
+    for listing in db.updatedListings.find():
         entry = listing[u'categories']
         try:
             if float(listing[u'avg_ratings']) >= minimumRating:
@@ -142,7 +142,7 @@ def numberGameExpansions(minimumRating):
     minimumGamesContain = 50
     totalExpansions = 0
     totalGames = 0
-    for listing in db.listings.find():
+    for listing in db.updatedListings.find():
         entry = listing[u'expansions']
         #print "new listing: " + str(listing[u'name'])
         if entry:    
@@ -161,37 +161,36 @@ def numberGameExpansions(minimumRating):
 
 
 def writeToCSV():
-	rank_limit = 9001
+    rank_limit = 300
 
-	myquery = db.listings.find({'rank':{'$lt':rank_limit}}).sort([
-			('rank', pymongo.ASCENDING)]) # I am getting everything !
+    myquery = db.updatedListings.find({'rank':{'$lt':rank_limit}}).sort([('rank', pymongo.ASCENDING)]) # I am getting everything !
 
-	#cleanRank()
+    cleanRank()
 
-	output = csv.writer(open('top-'+str(rank_limit)+'.csv', 'wt')) # writng in this file
+    output = csv.writer(open('top-'+str(rank_limit)+'.csv', 'wt')) # writng in this file
 
-	column_headers = [u'name',u'rank',u'year_published',u'mechanics',u'categories',u'subdomains',
-	u'playing_time',u'mfg_suggested_ages',u'user_suggested_ages',u'expansions',u'languages',u'honors',
-	u'mfg_suggested_players',u'user_suggested_players',u'count_ratings',u'avg_ratings',u'std_deviation',u'count_views',
-	]
+    column_headers = [u'name',u'rank',u'year_published',u'mechanics',u'categories',u'subdomains',	u'playing_time',u'mfg_suggested_ages',u'user_suggested_ages',u'expansions',u'languages',u'honors',	u'mfg_suggested_players',u'user_suggested_players',u'count_ratings',u'avg_ratings',u'std_deviation',u'count_views',]
 
-	output.writerow(column_headers)
-	print "writing row"
+    output.writerow(column_headers)
+    print "writing row"
 
-	for listing in myquery:
-		tt = list()
+    for listing in myquery:
+        tt = list()
+        #print "writing another row"
 
-		for k in column_headers:
-			tt.append(listing[k])
+        for k in column_headers:
+            tt.append(listing[k])
 
 		# for k,v in listing.items():
 		#     tt.append(v) #encoding
 		#     # tt.append(v.encode('ascii', 'ignore')) #encoding
 
+        output.writerow(tt)
+    print "done writing"
+      
 
-		output.writerow(tt)
-
-
+writeToCSV()
+"""
 print str(numGamesRating(7.0)) + " games are rated " + str(7.0) + " or above out of 80032 total games"
 print "\n\n"
 print "average board game is best with: " + str(averageSuggestedPlayers()) + " players"
@@ -204,5 +203,5 @@ numberGameCategories(7.0)
 print "\n\n"
 print str(numberGameExpansions(7.0)) + " games have expansions"
 print "\n\n"
-
+"""
 

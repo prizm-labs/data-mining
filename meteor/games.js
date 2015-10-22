@@ -23,3 +23,4 @@ if (Meteor.isServer) {
 }
 
 GameListings = new Meteor.Collection("listings");
+UpdatedGameListings = new Meteor.Collection("updatedListings");

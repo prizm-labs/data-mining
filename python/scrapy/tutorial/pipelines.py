@@ -9,7 +9,8 @@ from scrapy import signals
 from scrapy.contrib.exporter import CsvItemExporter
 from MeteorClient import MeteorClient
 # try to reconnect every second
-client = MeteorClient('ws://127.0.0.1:3333/websocket', auto_reconnect=True, auto_reconnect_timeout=1)
+#client = MeteorClient('ws://127.0.0.1:3333/websocket', auto_reconnect=True, auto_reconnect_timeout=1)
+client = MeteorClient('ws://127.0.0.1:3004/websocket', auto_reconnect=True, auto_reconnect_timeout=1)
 client.connect()
 
 def insert_callback(error, data):
@@ -42,7 +43,7 @@ class GameListingPipeline(object):
         file.close()
 
     def process_item(self, item, spider):
-        client.insert('listings', {
+        client.insert('updatedListings', {
             'name': item['name'],
             'year_published':item['year_published'],
             'mfg_suggested_players':item['mfg_suggested_players'],
