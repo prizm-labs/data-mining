@@ -1,0 +1,81 @@
+4614 games are rated 7.0 or above out of 80032 total games
+
+
+
+average board game is best with: 3.29250076212 players
+
+
+
+for board games that are rated 7.0 or above, average suggested players is: 2.90681576145 players
+
+
+
+Assessing games mechanics with a min rating of: 7.0
+Printing all mechanics that more than 50 games have
+283 games have the mechanic of: Dice Rolling
+228 games have the mechanic of: Hex-and-Counter
+176 games have the mechanic of: Hand Management
+138 games have the mechanic of: Advanced Squad Leader
+105 games have the mechanic of: Card Drafting
+102 games have the mechanic of: Area Control / Area Influence
+85 games have the mechanic of: Simulation
+80 games have the mechanic of: Modular Board
+80 games have the mechanic of: Area Movement
+77 games have the mechanic of: Set Collection
+71 games have the mechanic of: Campaign / Battle Card Driven
+70 games have the mechanic of: Action Point Allowance System
+67 games have the mechanic of: Variable Player Powers
+66 games have the mechanic of: Auction/Bidding
+64 games have the mechanic of: Grid Movement
+62 games have the mechanic of: Point to Point Movement
+55 games have the mechanic of: Tile Placement
+53 games have the mechanic of: Combinatorial
+
+
+
+Assessing only games categories with a min rating of: 7.0
+Printing all categories that more than 50 games have
+702 games are in the category of: Hex-and-Counter
+659 games are in the category of: Dice Rolling
+340 games are in the category of: Wargame
+251 games are in the category of: Simulation
+235 games are in the category of: Hand Management
+189 games are in the category of: Modular Board
+157 games are in the category of: Variable Player Powers
+139 games are in the category of: Action Point Allowance System
+136 games are in the category of: Area Movement
+133 games are in the category of: World War II
+124 games are in the category of: Economic
+120 games are in the category of: Card Game
+116 games are in the category of: Campaign / Battle Card Driven
+104 games are in the category of: Advanced Squad Leader
+104 games are in the category of: Area Control / Area Influence
+102 games are in the category of: Secret Unit Deployment
+101 games are in the category of: Co-operative Play
+91 games are in the category of: Card Drafting
+88 games are in the category of: Simultaneous Action Selection
+87 games are in the category of: Tile Placement
+81 games are in the category of: Auction/Bidding
+77 games are in the category of: Expansion for Base-game
+72 games are in the category of: Grid Movement
+72 games are in the category of: Fighting
+69 games are in the category of: Fantasy
+69 games are in the category of: Chit-Pull System
+67 games are in the category of: Route/Network Building
+65 games are in the category of: Point to Point Movement
+57 games are in the category of: Set Collection
+55 games are in the category of: Ancient
+53 games are in the category of: City Building
+53 games are in the category of: Medieval
+52 games are in the category of: Role Playing
+51 games are in the category of: Civilization
+
+
+
+Assessing only games expansions with a min rating of: 7.0
+3473 total expansions
+average expansion per game: 1.88545059718
+1842 games have expansions
+
+
+

@@ -3,6 +3,7 @@ from tutorial.items import GameListing
 
 import csv
 import sys
+import re
 
 def extract_text(response,css_selector,extract_with_links):
     xpath = response.css(css_selector)
@@ -29,6 +30,7 @@ def clean_text(text):
     else:
         return 'null';
 
+
 class DmozSpider(scrapy.Spider):
     name = "bgg"
     allowed_domains = ["boardgamegeek.com"]
@@ -36,6 +38,9 @@ class DmozSpider(scrapy.Spider):
         #"https://boardgamegeek.com/boardgame/27833/steam"
         "https://boardgamegeek.com/browse/boardgame"
     ]
+
+    statistics_access_index = 0
+    child = 2
 
     def parse(self, response):
         hxs = scrapy.Selector(response)
@@ -55,6 +60,41 @@ class DmozSpider(scrapy.Spider):
             print title, url
             yield scrapy.Request(url, callback=self.parse_game_detail_page)
 
+    def statistics_parse_helper(self, response):
+        #the table row that we are accessing is called self.child
+        base_string = "table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(%d) > td:nth-child(2)" % self.child
+        #print "child: " + str(self.child)
+        #find out what section we are looking at (i.e. Num Ratings, Family Game Rank, Standard Dev, etc)
+        category_name = extract_text(response, "table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(%d) > td:nth-child(1) > b" % self.child, False)
+	#print "category_name: " + category_name
+
+        try:
+            if (re.search(r'.*(Rank:)', category_name).group(1)):  #if we we on something that is a rank, we don't want it, recurse for the next one
+                #print "Rank caught"
+                self.child += 1
+                self.statistics_parse_helper(response)
+        except:
+            pass
+        try:
+            if (re.search(r'.*(Ratings:)', category_name).group(1)):    #if we caught Num Ratings, append hyperlink tag
+                self.child += 1
+                #print "Num ratings caught"
+                return (base_string + " > a")
+        except:
+            pass
+        try:
+            if (re.search(r'.*(Views:)', category_name).group(1)):    #if we are on Num Views, reset child count (all we need)
+                self.child = 1
+                #print "num views caught"
+                return base_string
+        except:
+            pass
+        try:  #if we are on any other statistic, prepare for the next one and return default string
+            self.child += 1
+            #print "none caught"
+            return base_string
+        except:
+            print "catastrophic failure!!!"
 
     def parse_game_detail_page(self,response):
 
@@ -103,18 +143,18 @@ class DmozSpider(scrapy.Spider):
         # ==========
         # Board Game Rank
         listing["rank"] = extract_text(response,"table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(1) > td:nth-child(2) > a",False)
-
+        self.child = 2
         # Num Ratings:
-        listing["count_ratings"] = extract_text(response,"table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(3) > td:nth-child(2) > a",False)
+        listing["count_ratings"] = extract_text(response,self.statistics_parse_helper(response),False)
 
         # Average Rating:
-        listing["avg_ratings"] = extract_text(response,"table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(4) > td:nth-child(2)",False)
+        listing["avg_ratings"] = extract_text(response,self.statistics_parse_helper(response),False)
 
         # Standard Deviation:
-        listing["std_deviation"] = extract_text(response,"table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(5) > td:nth-child(2)",False)
+        listing["std_deviation"] = extract_text(response,self.statistics_parse_helper(response),False)
 
         # Num Views:
-        listing["count_views"] = extract_text(response,"table.innermoduletable > tr > td:nth-child(1) > table > tr:nth-child(6) > td:nth-child(2)",False)
-
+        listing["count_views"] = extract_text(response,self.statistics_parse_helper(response),False)
+        self.child = 2
 
         yield listing
