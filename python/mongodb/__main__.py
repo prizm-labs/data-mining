@@ -83,7 +83,7 @@ def numGamesRating(minimumRating):
 #returns number of games associated with a certain mechanic
 def numberGameMechanics(minimumRating, maximumRating, minPopularity):
     print "Assessing games mechanics with a min rating of: " + str(minimumRating) + " and a max rating of: " + str(maximumRating) + ", and a minimum popularity of: " + str(minPopularity) + " votes"
-    minimumGameHasMechanic = 50
+    minimumGameHasMechanic = 10
     newMechanicsDict = {}
     mechanicsDict = {}
     sortedMechanicList = []
@@ -142,7 +142,7 @@ def numberQuantityGameMechanics(minimumRating, maximumRating, minPopularity):
 #returns number of games associated with a certain subdomain
 def numberGameSubdomains(minimumRating, maximumRating, minPopularity):
     print "Assessing games subdomains with a min rating of: " + str(minimumRating) + " and a max rating of: " + str(maximumRating) + ", and a minimum popularity of: " + str(minPopularity) + " votes"
-    minimumGameInSubdomain = 50
+    minimumGameInSubdomain = 10
     newSubdomainsDict = {}
     subdomainsDict = {}
     sortedSubdomainList = []
@@ -174,7 +174,7 @@ def numberGameSubdomains(minimumRating, maximumRating, minPopularity):
 #returns number of games associated with a certain mechanic
 def numberGameMechanicsAndCategory(minimumRating, maximumRating, minPopularity):
     print "Assessing games mechanics/categories with a min rating of: " + str(minimumRating) + " and a max rating of: " + str(maximumRating) + ", and a minimum popularity of: " + str(minPopularity) + " votes"
-    minimumGameHasMechanic = 50
+    minimumGameHasMechanic = 10
     newMechanicsDict = {}
     mechanicsDict = {}
     sortedMechanicList = []
@@ -454,7 +454,7 @@ def popularityVsGameRank(minimumPopularity):
             
 def numberGameCategories(minimumRating, maximumRating, minPopularity):
     print "Assessing only games categories with a min rating of: " + str(minimumRating) + " and a max rating of: " + str(maximumRating) + ", and a minimum popularity of: " + str(minPopularity) + " votes"
-    minimumGamesContain = 50
+    minimumGamesContain = 10
     categoriesDict = {}
     newCategoriesDict = {}
     for listing in db.updatedListings.find():
@@ -483,7 +483,7 @@ def numberGameCategories(minimumRating, maximumRating, minPopularity):
 
 def numberGameExpansions(minimumRating):
     print "Assessing only games expansions with a min rating of: " + str(minimumRating)
-    minimumGamesContain = 50
+    minimumGamesContain = 10
     totalExpansions = 0
     totalGames = 0
     for listing in db.updatedListings.find():
@@ -546,7 +546,7 @@ def writeToCSV():
 #how many popular games have certain mechanic
 #numberGameMechanics(0.1, 7.0, 1000) #worst rated, at least 1000 poular
 #numberGameMechanics(7.0, 10.0, 1000) #best rated, at least 1000 poular
-#numberGameMechanics(0.1, 10.0, 10) #all-inclusive, at least 1000 poular
+#numberGameMechanics(0.1, 10.0, 1000) #all-inclusive, at least 1000 poular
 
 #NOTE: average popularity per game mechanic is extrapolated by total popularity / number of popular games
 
@@ -607,7 +607,7 @@ def writeToCSV():
 
 #number of games that are in certain subdomain
 #numberGameSubdomains(0.1, 7.0, 1000) #worst rated, at least 1000 popular
-#numberGameSubdomains(7.0, 10.0, 1000) #best rated, at least 1000 popular
+numberGameSubdomains(7.0, 10.0, 1000) #best rated, at least 1000 popular
 #numberGameSubdomains(0.1, 10.0, 1000) #all-inclusive, at least 1000 popular
 
 #NOTE: average popularity per game subdomain is extrapolated by total popularity / number of popular games
