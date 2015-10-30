@@ -60,14 +60,15 @@ class DmozSpider(scrapy.Spider):
             print title, url
             yield scrapy.Request(url, callback=self.parse_game_detail_page)
             
-    def general_parse_helper(self, response, regex_key):
+    def general_parse_helper(self, response, regex_key, extract_text_bool):
         for i in range(20):
-            entry_name = extract_text(response,"table.geekitem_infotable > tr:nth-child(%d) > td:nth-child(1) > div" % i,False)
+            entry_name = extract_text(response,"table.geekitem_infotable > tr:nth-child(%d) > td:nth-child(1) > b" % i,False)
+            #print "Entry name is: " + entry_name + " from n-th child: " + str(i)
             try:
                 if (re.search(r'.*(%s)' % regex_key, entry_name).group(1)):  #if we hit the right entry
-                    return extract_text(response,"table.geekitem_infotable > tr:nth-child(%d) > td:nth-child(2) > div" % i,True)
-                except:
-                    pass
+                    return extract_text(response,"table.geekitem_infotable > tr:nth-child(%d) > td:nth-child(2) > div" % i,extract_text_bool)
+            except:
+                pass
                 
             
 
@@ -121,7 +122,8 @@ class DmozSpider(scrapy.Spider):
         listing["mfg_suggested_players"] = extract_text(response,"div#edit_players > div:nth-child(2)",False)
 
         # User Suggested # of Players
-        listing["user_suggested_players"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(6) > td:nth-child(2) > div",False)
+        #listing["user_suggested_players"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(6) > td:nth-child(2) > div",False)
+        listing["user_suggested_players"] = self.general_parse_helper(response, "User Suggested # of Players", False)
 
         # Mfg Suggested Ages
         listing["mfg_suggested_ages"] = extract_text(response,"div#edit_minage > div:nth-child(2)",False)
@@ -130,28 +132,32 @@ class DmozSpider(scrapy.Spider):
         listing["playing_time"] = extract_text(response,"div#edit_playtime > div:nth-child(2)",False)
 
         # User Suggested Ages
-        listing["user_suggested_ages"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(9) > td:nth-child(2) > div",False)
+        #listing["user_suggested_ages"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(9) > td:nth-child(2) > div",False)
+        listing["user_suggested_ages"] = self.general_parse_helper(response, "User Suggested Ages", False)
 
         # Language Dependence
-        listing["languages"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(10) > td:nth-child(2) > div",False)
+        #listing["languages"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(10) > td:nth-child(2) > div",False)
+        listing["languages"] = self.general_parse_helper(response, "Language Dependence", False)
 
         # Honors
-        listing["honors"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(11) > td:nth-child(2) > div",True)
+        #listing["honors"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(11) > td:nth-child(2) > div",True)
+        listing["honors"] = self.general_parse_helper(response, "Honors", True)
 
         # Sub-domain
-        listing["subdomains"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(12) > td:nth-child(2) > div",True)
+        #listing["subdomains"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(12) > td:nth-child(2) > div",True)
+        listing["subdomains"] = self.general_parse_helper(response, "Subdomain", True)
 
         # Category
-        listing["categories"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(13) > td:nth-child(2) > div",True)
+        #listing["categories"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(13) > td:nth-child(2) > div",True)
+        listing["categories"] = self.general_parse_helper(response, "Category", True)
 
         # Mechanic
-        listing["mechanics"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(14) > td:nth-child(2) > div",True)
-        
-        # Mechanic
-        listing["mechanics"] = general_parse_helper(response, "Mechanic")
+        #listing["mechanics"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(14) > td:nth-child(2) > div",True)
+        listing["mechanics"] = self.general_parse_helper(response, "Mechanic", True)
 
         # Expansions
-        listing["expansions"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(15) > td:nth-child(2) > div",True)
+        #listing["expansions"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(15) > td:nth-child(2) > div",True)
+        listing["expansions"] = self.general_parse_helper(response, "Expansion", True)
 
         # Statistics
         # ==========

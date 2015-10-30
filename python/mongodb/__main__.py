@@ -505,7 +505,7 @@ def numberGameExpansions(minimumRating):
 
 
 def writeToCSV():
-    rank_limit = 3000
+    rank_limit = 200
 
     myquery = db.updatedListings.find({'rank':{'$lt':rank_limit}}).sort([('rank', pymongo.ASCENDING)]) # I am getting everything !
 
@@ -523,7 +523,9 @@ def writeToCSV():
         #print "writing another row"
 
         for k in column_headers:
-            tt.append(listing[k])
+            temp_row = str(listing[k]).replace(";", ",")
+            print temp_row
+            tt.append(temp_row)
 
 		# for k,v in listing.items():
 		#     tt.append(v) #encoding
@@ -531,8 +533,36 @@ def writeToCSV():
 	#print "in listing"
         output.writerow(tt)
     print "done writing"
+    
+def writeALLToCSV():
+    myquery = db.updatedListings.find().sort([('rank', pymongo.ASCENDING)]) # I am getting everything !
 
+    cleanRank()
+
+    output = csv.writer(open('ALL_data.csv', 'wt')) # writng in this file
+
+    column_headers = [u'name',u'rank',u'year_published',u'mechanics',u'categories',u'subdomains',	u'playing_time',u'mfg_suggested_ages',u'user_suggested_ages',u'expansions',u'languages',u'honors',	u'mfg_suggested_players',u'user_suggested_players',u'count_ratings',u'avg_ratings',u'std_deviation',u'count_views',]
+
+    output.writerow(column_headers)
+    #print "writing row"
+
+    for listing in myquery:
+        tt = list()
+        #print "writing another row"
+
+        for k in column_headers:
+            temp_row = str(listing[k]).replace(";", ",")
+            print temp_row
+            tt.append(temp_row)
+
+		# for k,v in listing.items():
+		#     tt.append(v) #encoding
+		#     # tt.append(v.encode('ascii', 'ignore')) #encoding
+	#print "in listing"
+        output.writerow(tt)
+    print "done writing"
 #writeToCSV()
+writeALLToCSV()
 
 
 #Completed, Useful Functions:
@@ -607,7 +637,7 @@ def writeToCSV():
 
 #number of games that are in certain subdomain
 #numberGameSubdomains(0.1, 7.0, 1000) #worst rated, at least 1000 popular
-numberGameSubdomains(7.0, 10.0, 1000) #best rated, at least 1000 popular
+#numberGameSubdomains(7.0, 10.0, 1000) #best rated, at least 1000 popular
 #numberGameSubdomains(0.1, 10.0, 1000) #all-inclusive, at least 1000 popular
 
 #NOTE: average popularity per game subdomain is extrapolated by total popularity / number of popular games
