@@ -59,6 +59,17 @@ class DmozSpider(scrapy.Spider):
             url = response.urljoin(link[0])
             print title, url
             yield scrapy.Request(url, callback=self.parse_game_detail_page)
+            
+    def general_parse_helper(self, response, regex_key):
+        for i in range(20):
+            entry_name = extract_text(response,"table.geekitem_infotable > tr:nth-child(%d) > td:nth-child(1) > div" % i,False)
+            try:
+                if (re.search(r'.*(%s)' % regex_key, entry_name).group(1)):  #if we hit the right entry
+                    return extract_text(response,"table.geekitem_infotable > tr:nth-child(%d) > td:nth-child(2) > div" % i,True)
+                except:
+                    pass
+                
+            
 
     def statistics_parse_helper(self, response):
         #the table row that we are accessing is called self.child
@@ -135,6 +146,9 @@ class DmozSpider(scrapy.Spider):
 
         # Mechanic
         listing["mechanics"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(14) > td:nth-child(2) > div",True)
+        
+        # Mechanic
+        listing["mechanics"] = general_parse_helper(response, "Mechanic")
 
         # Expansions
         listing["expansions"] = extract_text(response,"table.geekitem_infotable > tr:nth-child(15) > td:nth-child(2) > div",True)
