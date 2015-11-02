@@ -281,7 +281,7 @@ def popularityGameMechanics(minimumRating, maximumRating):
 #returns gross popularity of game mechanics
 def popularityGameSubdomains(minimumRating, maximumRating):
     print "Assessing games subdomains with a min rating of: " + str(minimumRating) + " and a max rating of: " + str(maximumRating)
-    minimumPopularity = 1000
+    minimumPopularity = 500
     clampedSubdomainDict = {}
     subdomainsDict = {}
     sortedSubdomainList = []
@@ -566,6 +566,7 @@ def writeALLToCSV():
 #writeALLToCSV()
 
 def main():
+    """
     sys.stdout = open('new_BGG_mined_statistics/pop_mech_w.csv', 'w')
     popularityGameMechanics(0.1, 7.0)
     sys.stdout = open('new_BGG_mined_statistics/pop_mech_b.csv', 'w')
@@ -610,6 +611,7 @@ def main():
     numberGameComplexity(7.0, 10.0, 1000)
     sys.stdout = open('new_BGG_mined_statistics/complexity_a.csv', 'w')
     numberGameComplexity(0.1, 10.0, 1000)
+    """
     
     sys.stdout = open('new_BGG_mined_statistics/pop_subdom_w.csv', 'w')
     popularityGameSubdomains(0.1, 7.0)
@@ -619,12 +621,13 @@ def main():
     popularityGameSubdomains(0.1, 10.0)
     
     sys.stdout = open('new_BGG_mined_statistics/num_subdom_w.csv', 'w')
-    numberGameSubdomains(0.1, 7.0, 1000)
+    numberGameSubdomains(0.1, 7.0, 500)
     sys.stdout = open('new_BGG_mined_statistics/num_subdom_b.csv', 'w')
-    numberGameSubdomains(7.0, 10.0, 1000)
+    numberGameSubdomains(7.0, 10.0, 500)
     sys.stdout = open('new_BGG_mined_statistics/num_subdom_a.csv', 'w')
-    numberGameSubdomains(0.1, 10.0, 1000)
+    numberGameSubdomains(0.1, 10.0, 500)
     
+    """
     sys.stdout = open('new_BGG_mined_statistics/num_quantitymech_w_1000min.csv', 'w')
     numberQuantityGameMechanics(0.1, 7.0, 1000)
     sys.stdout = open('new_BGG_mined_statistics/num_quantitymech_b_1000min.csv', 'w')
@@ -638,12 +641,13 @@ def main():
     numberQuantityGameMechanics(7.0, 10.0, 200)
     sys.stdout = open('new_BGG_mined_statistics/num_quantitymech_a_200min.csv', 'w')
     numberQuantityGameMechanics(0.1, 10.0, 200)
+    """
 
 
-writeToCSV(5000)    #write top 5000 values to csv
+#writeToCSV(5000)    #write top 5000 values to csv
 
 
-#main() #exports all data to different csv files
+main() #exports all data to different csv files
 
 
 #Completed, Useful Functions:

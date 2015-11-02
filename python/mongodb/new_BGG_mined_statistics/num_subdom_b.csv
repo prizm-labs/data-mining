@@ -1,13 +1,13 @@
-Assessing games subdomains with a min rating of: 7.0 and a max rating of: 10.0, and a minimum popularity of: 1000 votes
+Assessing games subdomains with a min rating of: 7.0 and a max rating of: 10.0, and a minimum popularity of: 500 votes
 could not convert string to float: null
 could not convert string to float: null
 could not convert string to float: null
 could not convert string to float: null
 Printing all subdomains that more than 10 games are in
-418, Strategy Games
-152, Thematic Games
-133, Family Games
-70, Wargames
-34, Party Games
-33, Customizable Games
-30, Abstract Games
+576, Strategy Games
+258, Thematic Games
+183, Family Games
+154, Wargames
+54, Customizable Games
+45, Party Games
+35, Abstract Games
