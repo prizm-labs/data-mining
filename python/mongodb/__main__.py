@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import re
 import operator
 import csv
+import sys
 
 client = MongoClient('mongodb://127.0.0.1:3005')
 db = client['meteor']
@@ -504,8 +505,8 @@ def numberGameExpansions(minimumRating):
     #return totalExpansions / totalGames
 
 
-def writeToCSV():
-    rank_limit = 200
+def writeToCSV(rank_limit):
+    #rank_limit = 5000
 
     myquery = db.updatedListings.find({'rank':{'$lt':rank_limit}}).sort([('rank', pymongo.ASCENDING)]) # I am getting everything !
 
@@ -524,7 +525,7 @@ def writeToCSV():
 
         for k in column_headers:
             temp_row = str(listing[k]).replace(";", ",")
-            print temp_row
+            #print temp_row
             tt.append(temp_row)
 
 		# for k,v in listing.items():
@@ -535,7 +536,7 @@ def writeToCSV():
     print "done writing"
     
 def writeALLToCSV():
-    myquery = db.updatedListings.find().sort([('rank', pymongo.ASCENDING)]) # I am getting everything !
+    myquery = db.updatedListings.find()
 
     cleanRank()
 
@@ -552,7 +553,7 @@ def writeALLToCSV():
 
         for k in column_headers:
             temp_row = str(listing[k]).replace(";", ",")
-            print temp_row
+            #print temp_row
             tt.append(temp_row)
 
 		# for k,v in listing.items():
@@ -562,7 +563,87 @@ def writeALLToCSV():
         output.writerow(tt)
     print "done writing"
 #writeToCSV()
-writeALLToCSV()
+#writeALLToCSV()
+
+def main():
+    sys.stdout = open('new_BGG_mined_statistics/pop_mech_w.csv', 'w')
+    popularityGameMechanics(0.1, 7.0)
+    sys.stdout = open('new_BGG_mined_statistics/pop_mech_b.csv', 'w')
+    popularityGameMechanics(7.0, 10.0)
+    sys.stdout = open('new_BGG_mined_statistics/pop_mech_a.csv', 'w')
+    popularityGameMechanics(0.1, 10.0)
+    
+    sys.stdout = open('new_BGG_mined_statistics/num_mech_w.csv', 'w')
+    numberGameMechanics(0.1, 7.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/num_mech_b.csv', 'w')
+    numberGameMechanics(7.0, 10.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/num_mech_a.csv', 'w')
+    numberGameMechanics(0.1, 10.0, 1000)
+    
+    sys.stdout = open('new_BGG_mined_statistics/pop_cat_w.csv', 'w')
+    popularityGameCategory(0.1, 7.0)
+    sys.stdout = open('new_BGG_mined_statistics/pop_cat_b.csv', 'w')
+    popularityGameCategory(7.0, 10.0)
+    sys.stdout = open('new_BGG_mined_statistics/pop_cat_a.csv', 'w')
+    popularityGameCategory(0.1, 10.0)
+    
+    sys.stdout = open('new_BGG_mined_statistics/num_cat_w.csv', 'w')
+    numberGameCategories(0.1, 7.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/num_cat_b.csv', 'w')
+    numberGameCategories(7.0, 10.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/num_cat_a.csv', 'w')
+    numberGameCategories(0.1, 10.0, 1000)
+    
+    sys.stdout = open('new_BGG_mined_statistics/pop_vs_rank.csv', 'w')
+    popularityVsGameRank(1000)  #associates game's rank with popularity, at least 1000 votes
+    
+    sys.stdout = open('new_BGG_mined_statistics/pop_playtimes_w.csv', 'w')
+    popularityPlayingTime(0.1, 7.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/pop_playtimes_b.csv', 'w')
+    popularityPlayingTime(7.0, 10.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/pop_playtimes_a.csv', 'w')
+    popularityPlayingTime(0.1, 10.0, 1000)
+    
+    sys.stdout = open('new_BGG_mined_statistics/complexity_w.csv', 'w')
+    numberGameComplexity(0.1, 7.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/complexity_b.csv', 'w')
+    numberGameComplexity(7.0, 10.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/complexity_a.csv', 'w')
+    numberGameComplexity(0.1, 10.0, 1000)
+    
+    sys.stdout = open('new_BGG_mined_statistics/pop_subdom_w.csv', 'w')
+    popularityGameSubdomains(0.1, 7.0)
+    sys.stdout = open('new_BGG_mined_statistics/pop_subdom_b.csv', 'w')
+    popularityGameSubdomains(7.0, 10.0)
+    sys.stdout = open('new_BGG_mined_statistics/pop_subdom_a.csv', 'w')
+    popularityGameSubdomains(0.1, 10.0)
+    
+    sys.stdout = open('new_BGG_mined_statistics/num_subdom_w.csv', 'w')
+    numberGameSubdomains(0.1, 7.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/num_subdom_b.csv', 'w')
+    numberGameSubdomains(7.0, 10.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/num_subdom_a.csv', 'w')
+    numberGameSubdomains(0.1, 10.0, 1000)
+    
+    sys.stdout = open('new_BGG_mined_statistics/num_quantitymech_w_1000min.csv', 'w')
+    numberQuantityGameMechanics(0.1, 7.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/num_quantitymech_b_1000min.csv', 'w')
+    numberQuantityGameMechanics(7.0, 10.0, 1000)
+    sys.stdout = open('new_BGG_mined_statistics/num_quantitymech_a_1000min.csv', 'w')
+    numberQuantityGameMechanics(0.1, 10.0, 1000)
+    
+    sys.stdout = open('new_BGG_mined_statistics/num_quantitymech_w_200min.csv', 'w')
+    numberQuantityGameMechanics(0.1, 7.0, 200)
+    sys.stdout = open('new_BGG_mined_statistics/num_quantitymech_b_200min.csv', 'w')
+    numberQuantityGameMechanics(7.0, 10.0, 200)
+    sys.stdout = open('new_BGG_mined_statistics/num_quantitymech_a_200min.csv', 'w')
+    numberQuantityGameMechanics(0.1, 10.0, 200)
+
+
+writeToCSV(5000)    #write top 5000 values to csv
+
+
+#main() #exports all data to different csv files
 
 
 #Completed, Useful Functions:
