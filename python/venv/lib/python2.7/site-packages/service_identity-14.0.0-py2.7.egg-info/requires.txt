@@ -1,0 +1,4 @@
+characteristic>=14.0.0
+pyasn1
+pyasn1-modules
+pyopenssl>=0.12

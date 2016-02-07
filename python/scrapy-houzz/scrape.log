@@ -1,0 +1,35 @@
+2015-10-16 04:25:54 [scrapy] INFO: Closing spider (finished)
+2015-10-16 04:25:54 [scrapy] ERROR: Error caught on signal handler: <bound method ?.spider_closed of <tutorial.pipelines.GameListingPipeline object at 0x10f9b34d0>>
+Traceback (most recent call last):
+  File "/Users/michaelgarrido/scrapy/venv/lib/python2.7/site-packages/twisted/internet/defer.py", line 150, in maybeDeferred
+    result = f(*args, **kw)
+  File "/Users/michaelgarrido/scrapy/venv/lib/python2.7/site-packages/scrapy/xlib/pydispatch/robustapply.py", line 57, in robustApply
+    return receiver(*arguments, **named)
+  File "/Users/michaelgarrido/scrapy/tutorial/tutorial/pipelines.py", line 33, in spider_closed
+    file.close()
+IOError: [Errno 28] No space left on device
+2015-10-16 04:25:54 [scrapy] INFO: Dumping Scrapy stats:
+{'downloader/request_bytes': 30099964,
+ 'downloader/request_count': 80823,
+ 'downloader/request_method_count/GET': 80823,
+ 'downloader/response_bytes': 2233466276,
+ 'downloader/response_count': 80823,
+ 'downloader/response_status_count/200': 80822,
+ 'downloader/response_status_count/301': 1,
+ 'dupefilter/filtered': 8,
+ 'finish_reason': 'finished',
+ 'finish_time': datetime.datetime(2015, 10, 16, 11, 25, 54, 715973),
+ 'item_scraped_count': 79278,
+ 'log_count/DEBUG': 160103,
+ 'log_count/ERROR': 744,
+ 'log_count/INFO': 413,
+ 'log_count/WARNING': 1,
+ 'request_depth_max': 801,
+ 'response_received_count': 80822,
+ 'scheduler/dequeued': 80823,
+ 'scheduler/dequeued/memory': 80823,
+ 'scheduler/enqueued': 80823,
+ 'scheduler/enqueued/memory': 80823,
+ 'start_time': datetime.datetime(2015, 10, 16, 4, 39, 33, 663662)}
+2015-10-16 04:25:54 [scrapy] INFO: Spider closed (finished)
+(venv)Michaels-iMac:tutorial michaelgarrido$ cd ../
