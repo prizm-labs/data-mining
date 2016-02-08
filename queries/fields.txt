@@ -1,0 +1,17 @@
+name
+address
+zipCode
+contactName
+contactPhone
+website
+profileUrl
+jobCostMin
+jobCostMax
+licenseNumber
+averageRating
+followers
+following
+badgeCount
+projectCount
+reviewCount
+commentCount

@@ -14,11 +14,16 @@ meteor --port 3004 // server connection URL defined in pipelines.py
 // client = MeteorClient('ws://127.0.0.1:3004/websocket', auto_reconnect=True, auto_reconnect_timeout=1)
 
 ---
-### inspect database and export items to csv
+### inspect database
 cd meteor
 meteor mongo -U // get mongodb URL
 
 collections: "listings", "updatedListings" // in games.js
+
+### dump database
+
+mongodump -h 127.0.0.1 --port 3005 --db meteor --collection updatedListings --out dump_2-6-16
+
 
 
 ## SETUP NEW CRAWLER

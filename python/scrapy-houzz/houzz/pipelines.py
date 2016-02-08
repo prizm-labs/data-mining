@@ -17,7 +17,7 @@ def insert_callback(error, data):
     if error:
         print(error)
         return
-    print(data)
+    # print(data)
 
 def item_to_dictionary(item,keys):
 
@@ -61,7 +61,8 @@ class GameListingPipeline(object):
             'averageRating','profileUrl','followers','following',
             'badgeCount','projectCount','reviewCount','commentCount']
         dictionary = item_to_dictionary(item,keys)
-        print 'document to insert',dictionary
-        client.insert('listings', dictionary, callback=insert_callback)
+        # print 'document to insert',dictionary
+        client.insert('updatedListings', dictionary, callback=insert_callback)
+        # client.insert('listings', dictionary, callback=insert_callback)
 
         self.exporter.export_item(item)

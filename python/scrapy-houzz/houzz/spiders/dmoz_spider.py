@@ -47,6 +47,7 @@ class DmozSpider(scrapy.Spider):
     allowed_domains = ["www.houzz.com"]
     start_urls = [
         #"https://boardgamegeek.com/boardgame/27833/steam"
+        #"http://www.houzz.com/professionals/general-contractor/los-angeles/p/4980"
         "http://www.houzz.com/professionals/general-contractor/los-angeles"
     ]
 
@@ -73,14 +74,13 @@ class DmozSpider(scrapy.Spider):
             url = link[0].encode('ascii','ignore')
 
             # check URL targeted
-            print "page title",title, "page URL",url
+            if ( 'http' in url ):
+                # print "found url for profile page"
+                print "page title",title, "page URL",url
 
-            # if ( len(re.search( r'(javascript)', url, re.M|re.I).group())!=0 ):
-            #     print "found url for profile page"
-            # else:
-            #     print "invalid page url"
-
-            # yield scrapy.Request(url, callback=self.parse_contractor_detail_page)
+                yield scrapy.Request(url, callback=self.parse_contractor_detail_page)
+            else:
+                print "invalid page url"
 
         # HAS "Typical Job Costs"
         # url = "http://www.houzz.com/pro/socalcontractor/socal-contractor"
@@ -92,6 +92,10 @@ class DmozSpider(scrapy.Spider):
         # url = "http://www.houzz.com/pro/chelseaconstruction/chelsea-construction-corporation"
         # yield scrapy.Request(url, callback=self.parse_contractor_detail_page)
 
+        # ALTERNATE LAYOUT (UNCLAIMED BUSINESS)
+        # EX. http://www.houzz.com/pro2/jarvisrichardbuildingcontractor/jarvis-richard-building-contractor
+        # url = "http://www.houzz.com/pro2/jarvisrichardbuildingcontractor/jarvis-richard-building-contractor"
+        # yield scrapy.Request(url, callback=self.parse_contractor_detail_page)
 
     def parse_contractor_detail_page(self,response):
     # ex. http://www.houzz.com/pro/socalcontractor/socal-contractor
@@ -108,144 +112,247 @@ class DmozSpider(scrapy.Spider):
         # CSS_SELECTOR = "div.info-list-text:nth-child(2)"
         # response.css(CSS_SELECTOR).xpath("text()").extract()
 
-        # name = scrapy.Field()
-        # response.css("a.profile-full-name").xpath("text()").extract()
-        name = extract_text(response,"a.profile-full-name",False)
-        listing["name"] = name
+
+
+        # DETAIL PAGE MAY HAVE ALTERNATE LAYOUT
+        # THIS IS AN UNCLAIMED BUSINESS
+        # EX. http://www.houzz.com/pro2/jarvisrichardbuildingcontractor/jarvis-richard-building-contractor
 
         # profileUrl = scrapy.Field()
         # response.css("a.profile-full-name").xpath("@href").extract()[0].encode('ascii','ignore')
-        profileUrl = response.css("a.profile-full-name").xpath("@href").extract()[0].encode('ascii','ignore')
-        listing["profileUrl"] = profileUrl
+        profileUrl = response.css("a.profile-full-name")
 
-        # website = scrapy.Field()
-        # response.css("a.profile-full-name").xpath("@href").extract()[0].encode('ascii','ignore')
-        # website = response.css("div.pro-contact-methods.one-line > a").xpath("@href").extract()[0].encode('ascii','ignore')
-        # compid="Profile_Website"
-        website = response.css("a[compid='Profile_Website']").xpath("@href").extract()[0].encode('ascii','ignore')
-        listing["website"] = website
+        if ( len(profileUrl) == 0 ):
+        # UNCLAIMED BUSINESS
 
-        # address = scrapy.Field()
-        # response.css("div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='streetAddress']").xpath("text()").extract()
-        address = extract_text(response,"div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='streetAddress']",False)
-        listing["address"] = address
+            print 'ALTERNATE LAYOUT (UNCLAIMED BUSINESS)'
 
-        # zipCode = scrapy.Field()
-        # response.css("div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='postalCode']").xpath("text()").extract()
-        zipCode = extract_text(response,"div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='postalCode']",False)
-        listing["zipCode"] = zipCode
+            # AVAILABLE INFO:
+            # name
+            # contactPhone
+            # address
+            # zipCode
 
+            # name = scrapy.Field()
+            # response.css("a.profile-full-name").xpath("text()").extract()
+            name = extract_text(response,"div.profile-full-name",False)
+            listing["name"] = name
 
-        # contactName = scrapy.Field()
-        contactName = extract_text(response,"div.info-list-label:nth-child(2) > div.info-list-text",False)
-        # ex. ': Roy Yerushalmi'
-        contactName = contactName.replace(": ","");
-        listing["contactName"] = contactName
+            # contactPhone = scrapy.Field()
+            # response.css("div.pro-contact-methods.one-line > span.pro-contact-text").xpath("text()").extract()
+            contactPhone = extract_text(response,"div.pro-contact-methods.one-line > span.pro-contact-text",False)
+            listing["contactPhone"] = contactPhone
 
-        # contactPhone = scrapy.Field()
-        # response.css("div.pro-contact-methods.one-line > span.pro-contact-text").xpath("text()").extract()
-        contactPhone = extract_text(response,"div.pro-contact-methods.one-line > span.pro-contact-text",False)
-        listing["contactPhone"] = contactPhone
+            # ADDITIONAL INFO
 
+            # MAY HAVE JUST ADDRESS
+            # EX. http://www.houzz.com/pro2/jarvisrichardbuildingcontractor/jarvis-richard-building-contractor
 
-        # averageRating = scrapy.Field()
-        # <meta itemprop="ratingValue" content="4.9">
-        # float(response.css("meta[itemprop='ratingValue']").xpath("@content").extract()[0].encode('ascii','ignore'))
-        averageRating = response.css("meta[itemprop='ratingValue']").xpath("@content").extract()[0].encode('ascii','ignore')
-        listing["averageRating"] = float(averageRating)
+            # MAY HAVE CONTACT AND ADDRESS
+            # EX. http://www.houzz.com/pro2/lindseyrammeinc/lindsey--ramme-inc
 
+            target_contact_and_address = response.css(".profile-content-narrow > div.info-list-label:nth-child(3)")
 
-        # badgeCount = scrapy.Field()
-        # response.css("a.following.follow-box > span.follow-count").xpath("text()").extract()
-        badgeCount = extract_text(response,"div.profile-sidebar-section > .header-6.top > a",False)
-        badgeCount = re.search( r'(\d+)', badgeCount, re.M|re.I).group(1)
-        listing["badgeCount"] = int(badgeCount.replace(",",""))
+            if ( len(target_contact_and_address) > 0):
+            # HAS CONTACT AND ADDRESS
 
-        # projectCount = scrapy.Field()
-        # response.css("div.project-section > .header-6.top > a").xpath("text()").extract()
-        projectCount = extract_text(response,"div.project-section > .header-6.top > a",False)
-        projectCount = re.search( r'(\d+)', projectCount, re.M|re.I).group(1)
-        listing["projectCount"] = int(projectCount.replace(",",""))
+                # contactName = scrapy.Field()
+                # response.css(".profile-content-narrow > div.info-list-label:nth-child(2) > div.info-list-text").xpath("text()").extract()
+                contactName = extract_text(response,".profile-content-narrow > div.info-list-label:nth-child(2) > div.info-list-text",False)
+                if (contactName):
+                    listing["contactName"] = contactName
 
-        # reviewCount = scrapy.Field()
-        # response.css("div.review-section > .header-6.top > a").xpath("text()").extract()
-        reviewCount = extract_text(response,"div.review-section > .header-6.top > a",False)
-        reviewCount = re.search( r'(\d+)', reviewCount, re.M|re.I).group(1)
-        listing["reviewCount"] = int(reviewCount.replace(",",""))
+                # address = scrapy.Field()
+                # response.css(".profile-content-narrow > div.info-list-label:nth-child(2) > div.info-list-text > span[itemprop='streetAddress']").xpath("text()").extract()
+                address = extract_text(response,".profile-content-narrow > div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='streetAddress']",False)
+                if (address):
+                    listing["address"] = address
 
-        # commentCount = scrapy.Field()
-        # response.css("div.question-section > .header-6.top > a").xpath("text()").extract()
-        commentCount = extract_text(response,"div.question-section > .header-6.top > a",False)
-        commentCount = re.search( r'(\d+)', commentCount, re.M|re.I).group(1)
-        listing["commentCount"] = int(commentCount)
+                # zipCode = scrapy.Field()
+                # response.css(".profile-content-narrow > div.info-list-label:nth-child(2) > div.info-list-text > span[itemprop='postalCode']").xpath("text()").extract()
+                zipCode = extract_text(response,".profile-content-narrow > div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='postalCode']",False)
+                if (listing):
+                    listing["zipCode"] = zipCode
 
+            else:
+            # HAS ONLY ADDRESS
 
-        # OPTIONAL ELEMENTS
-        #==================
+                # address = scrapy.Field()
+                # response.css(".profile-content-narrow > div.info-list-label:nth-child(2) > div.info-list-text > span[itemprop='streetAddress']").xpath("text()").extract()
+                address = extract_text(response,".profile-content-narrow > div.info-list-label:nth-child(2) > div.info-list-text > span[itemprop='streetAddress']",False)
+                if (address):
+                    listing["address"] = address
 
-        # MAY HAVE FOLlWERS
-
-        # followers = scrapy.Field()
-        # response.css("a.followers.follow-box > span.follow-count").xpath("text()").extract()
-        followers = extract_text(response,"a.followers.follow-box > span.follow-count",False)
-
-        if (followers):
-            listing["followers"] = int(followers.replace(",",""))
+                # zipCode = scrapy.Field()
+                # response.css(".profile-content-narrow > div.info-list-label:nth-child(2) > div.info-list-text > span[itemprop='postalCode']").xpath("text()").extract()
+                zipCode = extract_text(response,".profile-content-narrow > div.info-list-label:nth-child(2) > div.info-list-text > span[itemprop='postalCode']",False)
+                if (listing):
+                    listing["zipCode"] = zipCode
 
 
-        # MAY HAVE FOLLOWING
+        else:
+        # NORMAL PROFILE PAGE
 
-        # following = scrapy.Field()
-        # response.css("a.following.follow-box > span.follow-count").xpath("text()").extract()
-        following = extract_text(response,"a.following.follow-box > span.follow-count",False)
+            print("NORMAL PROFILE PAGE")
 
-        if (following):
-            listing["following"] = int(following.replace(",",""))
-
-        # MAY HAVE "License Number" at 4th element in right sidebar
-        # EX. http://www.houzz.com/pro/tnoroian/tnt-simmonds
-        # OR
-        # MAY HAVE "Typical Job Cost" at 4th element in right sidebar
-        # EX. http://www.houzz.com/pro/socalcontractor/socal-contractor
-
-        # OR NO ADDITIONAL INFO
-        # EX. http://www.houzz.com/pro/chelseaconstruction/chelsea-construction-corporation
-
-        # CHECK TYPE OF THIS ELEMENT
-        # response.css("div.info-list-label:nth-child(4) > div.info-list-text > b").xpath("text()").extract()
-
-        info_element = response.css("div.info-list-label:nth-child(4) > div.info-list-text").xpath("text()").extract()
-
-        if ( len(info_element) > 0):
-
-            element_type = response.css("div.info-list-label:nth-child(4) > div.info-list-text > b").xpath("text()").extract()[0].encode('ascii','ignore')
-            itemStr = extract_text(response,"div.info-list-label:nth-child(4) > div.info-list-text",False)
-
-            print "HAS ADDITIONAL INFO", element_type, itemStr
-
-            if (element_type == "Typical Job Costs"):
-                # ex. ':   $50000 - 15,000,000'
-                jobCostStr = itemStr
-
-                jobCostNumbers = re.search( r'\$(.*) \- (.*)', jobCostStr, re.M|re.I)
-
-                # jobCostMin = scrapy.Field()
-                # response.css("div.info-list-label:nth-child(4) > div.info-list-text").xpath("text()").extract()
-                jobCostMin = jobCostNumbers.group(1).replace(",","");
-                listing["jobCostMin"] = int(jobCostMin)
-
-                # jobCostMax = scrapy.Field()
-                jobCostMax = jobCostNumbers.group(2).replace(",","");
-                listing["jobCostMax"] = int(jobCostMax)
+            # name = scrapy.Field()
+            # response.css("a.profile-full-name").xpath("text()").extract()
+            name = extract_text(response,"a.profile-full-name",False)
+            listing["name"] = name
 
 
-            if (element_type == "License Number"):
-
-                licenseNumber = itemStr.replace(": ","");
-                listing["licenseNumber"] = licenseNumber
+            profileUrl = profileUrl.xpath("@href").extract()[0].encode('ascii','ignore')
+            listing["profileUrl"] = profileUrl
 
 
-        print "extracted listing:",listing
+            # address = scrapy.Field()
+            # response.css("div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='streetAddress']").xpath("text()").extract()
+            address = extract_text(response,"div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='streetAddress']",False)
+            listing["address"] = address
+
+            # zipCode = scrapy.Field()
+            # response.css("div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='postalCode']").xpath("text()").extract()
+            zipCode = extract_text(response,"div.info-list-label:nth-child(3) > div.info-list-text > span[itemprop='postalCode']",False)
+            listing["zipCode"] = zipCode
+
+
+            # contactName = scrapy.Field()
+            contactName = extract_text(response,"div.info-list-label:nth-child(2) > div.info-list-text",False)
+            # ex. ': Roy Yerushalmi'
+            contactName = contactName.replace(": ","");
+            listing["contactName"] = contactName
+
+            # contactPhone = scrapy.Field()
+            # response.css("div.pro-contact-methods.one-line > span.pro-contact-text").xpath("text()").extract()
+            contactPhone = extract_text(response,"div.pro-contact-methods.one-line > span.pro-contact-text",False)
+            listing["contactPhone"] = contactPhone
+
+
+            # OPTIONAL ELEMENTS
+            #==================
+
+            # MAY HAVE WEBSITE
+            # website = scrapy.Field()
+            # response.css("a.profile-full-name").xpath("@href").extract()[0].encode('ascii','ignore')
+            # website = response.css("div.pro-contact-methods.one-line > a").xpath("@href").extract()[0].encode('ascii','ignore')
+            # compid="Profile_Website"
+            website = response.css("a[compid='Profile_Website']")
+
+            if ( len(website)>0 ):
+                website = website.xpath("@href").extract()[0].encode('ascii','ignore')
+                listing["website"] = website
+
+            # MAY HAVE Badges
+
+            # badgeCount = scrapy.Field()
+            # response.css("a.following.follow-box > span.follow-count").xpath("text()").extract()
+            badgeCount = extract_text(response,"div.profile-sidebar-section > .header-6.top > a",False)
+            if (badgeCount):
+                badgeCount = re.search( r'(\d+)', badgeCount, re.M|re.I).group(1)
+                listing["badgeCount"] = int(badgeCount.replace(",",""))
+
+            # MAY HAVE Projects
+
+            # projectCount = scrapy.Field()
+            # response.css("div.project-section > .header-6.top > a").xpath("text()").extract()
+            projectCount = extract_text(response,"div.project-section > .header-6.top > a",False)
+            if (projectCount):
+                projectCount = re.search( r'(\d+)', projectCount, re.M|re.I).group(1)
+                listing["projectCount"] = int(projectCount.replace(",",""))
+
+            # MAY HAVE Reviews
+
+            # reviewCount = scrapy.Field()
+            # response.css("div.review-section > .header-6.top > a").xpath("text()").extract()
+            reviewCount = extract_text(response,"div.review-section > .header-6.top > a",False)
+            if (reviewCount):
+                reviewCount= re.search( r'(\d+)', reviewCount, re.M|re.I).group(1)
+                listing["reviewCount"] = int(reviewCount.replace(",",""))
+
+            # MAY HAVE Comments
+            # commentCount = scrapy.Field()
+            # response.css("div.question-section > .header-6.top > a").xpath("text()").extract()
+            commentCount = extract_text(response,"div.question-section > .header-6.top > a",False)
+            if (commentCount):
+                commentCount = re.search( r'(\d+)', commentCount, re.M|re.I).group(1)
+                listing["commentCount"] = int(commentCount)
+
+
+            # MAY HAVE RATING
+
+            # averageRating = scrapy.Field()
+            # <meta itemprop="ratingValue" content="4.9">
+            # float(response.css("meta[itemprop='ratingValue']").xpath("@content").extract()[0].encode('ascii','ignore'))
+            averageRating = response.css("meta[itemprop='ratingValue']")
+
+            if ( len(averageRating) > 0):
+                averageRating = averageRating.xpath("@content").extract()[0].encode('ascii','ignore')
+                listing["averageRating"] = float(averageRating)
+
+
+            # MAY HAVE FOLlWERS
+
+            # followers = scrapy.Field()
+            # response.css("a.followers.follow-box > span.follow-count").xpath("text()").extract()
+            followers = extract_text(response,"a.followers.follow-box > span.follow-count",False)
+
+            if (followers):
+                listing["followers"] = int(followers.replace(",",""))
+
+
+            # MAY HAVE FOLLOWING
+
+            # following = scrapy.Field()
+            # response.css("a.following.follow-box > span.follow-count").xpath("text()").extract()
+            following = extract_text(response,"a.following.follow-box > span.follow-count",False)
+
+            if (following):
+                listing["following"] = int(following.replace(",",""))
+
+            # MAY HAVE "License Number" at 4th element in right sidebar
+            # EX. http://www.houzz.com/pro/tnoroian/tnt-simmonds
+            # OR
+            # MAY HAVE "Typical Job Cost" at 4th element in right sidebar
+            # EX. http://www.houzz.com/pro/socalcontractor/socal-contractor
+
+            # OR NO ADDITIONAL INFO
+            # EX. http://www.houzz.com/pro/chelseaconstruction/chelsea-construction-corporation
+
+            # CHECK TYPE OF THIS ELEMENT
+            # response.css("div.info-list-label:nth-child(4) > div.info-list-text > b").xpath("text()").extract()
+
+            info_element = response.css("div.info-list-label:nth-child(4) > div.info-list-text").xpath("text()").extract()
+
+            if ( len(info_element) > 0):
+
+                element_type = response.css("div.info-list-label:nth-child(4) > div.info-list-text > b").xpath("text()").extract()[0].encode('ascii','ignore')
+                itemStr = extract_text(response,"div.info-list-label:nth-child(4) > div.info-list-text",False)
+
+                print "HAS ADDITIONAL INFO", element_type, itemStr
+
+                if (element_type == "Typical Job Costs"):
+                    # ex. ':   $50000 - 15,000,000'
+                    jobCostStr = itemStr
+
+                    jobCostNumbers = re.search( r'\$(.*) \- (.*)', jobCostStr, re.M|re.I)
+
+                    # jobCostMin = scrapy.Field()
+                    # response.css("div.info-list-label:nth-child(4) > div.info-list-text").xpath("text()").extract()
+                    jobCostMin = jobCostNumbers.group(1).replace(",","").replace(".00","");
+                    listing["jobCostMin"] = jobCostMin
+
+                    # jobCostMax = scrapy.Field()
+                    jobCostMax = jobCostNumbers.group(2).replace(",","").replace(".00","").replace("$","").replace("+","");
+                    listing["jobCostMax"] = jobCostMax
+
+
+                if (element_type == "License Number"):
+
+                    licenseNumber = itemStr.replace(": ","");
+                    listing["licenseNumber"] = licenseNumber
+
+
+        # print "extracted listing:",listing
 
         yield listing
 
